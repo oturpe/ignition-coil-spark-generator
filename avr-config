@@ -1,0 +1,5 @@
+projectName=ignition-coil-spark-generator
+sourceDir=src
+targetDir=target
+mcu=atmega32u4
+programmer=avr109
