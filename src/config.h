@@ -8,10 +8,10 @@
 #define LOOP_DELAY 100
 
 // Definition of indicator pin data direction and data ports and pins
-#define INDICATOR_DATA_DIR DDRC
-#define INDICATOR_DATA_DIR_PIN DDC7
-#define INDICATOR_DATA PORTC
-#define INDICATOR_DATA_PIN PORTC7
+#define INDICATOR_DATA_DIR DDRD
+#define INDICATOR_DATA_DIR_PIN DDD6
+#define INDICATOR_DATA PORTD
+#define INDICATOR_DATA_PIN PORTD6
 
 // Half length of one complete indicator period. In other words, the time the
 // indicator spends on and off. Given in units of LOOP_DELAY.
