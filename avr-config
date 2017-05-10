@@ -3,3 +3,4 @@ sourceDir=src
 targetDir=target
 mcu=atmega32u4
 programmer=avr109
+port=/dev/ttyACM3
