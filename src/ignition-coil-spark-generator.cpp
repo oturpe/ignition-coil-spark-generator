@@ -1,4 +1,5 @@
-// Add description here
+// Firmware for device triggering and generating tones with a car induction
+// coil.
 //
 // Author: Otto Urpelainen / Koelse
 // Email: oturpe@iki.fi
@@ -10,6 +11,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <stdlib.h>
 
 uint32_t indicatorCounter = 0;
 
@@ -40,9 +42,9 @@ void initializeSparkTrigger() {
     TCCR1B |= BV(WGM13) | BV(WGM12);
     TCCR1A |= BV(WGM11) | BV(WGM10);
 
-    //Prescaler 8 (step freq 2 MHz)
-    TCCR1B |= BV(CS11);
-    prescaler = 8;
+    // Prescaler
+    TCCR1B |= BV(CS11) | BV(CS10);
+    prescaler = 64;
 
     // Clear on compare match
     TCCR1A |= BV(COM1A0);
@@ -55,34 +57,54 @@ void initializeSparkTrigger() {
 ///    Sets spark frequency to given value.
 ///
 /// \param frequency
-///    Spark frequency in Herz
+///    Spark frequency in units of Hertz
 void setSparkFrequency(uint32_t frequency) {
     const uint32_t stepFrequency = F_CPU / prescaler;
 
     uint32_t steps = (stepFrequency / frequency) / 2;
-    if (steps > 0xffff) {
-        steps = 0xffff;
-    }
 
     OCR1A = steps;
+}
+
+/// \brief
+///    Returns the frequency of a random note between defined minimum and
+///    maximum tone.
+///
+/// \return
+///    Random note frequency
+uint32_t randomNoteFrequency() {
+    uint8_t steps = rand() % TONE_RANGE;
+
+    uint32_t frequency = TONE_MINIMUM_FREQUENCY;
+    for (int i = 0; i < steps; i++) {
+        frequency *= TONE_INTERVAL_RATIO;
+    }
+
+    return frequency;
 }
 
 int main() {
     INDICATOR_DATA_DIR |= BV(INDICATOR_DATA_DIR_PIN);
 
     initializeSparkTrigger();
-    
-    // Testing
-    uint32_t freq = 20000;
+
+    uint32_t frequencyDirection = 1;
+
+    uint32_t frequencyCounter = 0;
 
     while (true) {
-        // Testing
-        setSparkFrequency(freq);
-        freq *= 0.95;
-        if (freq < 20) {
-            freq = 20000;
+        // Set spark tone
+        if (frequencyCounter == TONE_PERIOD) {
+            uint32_t frequency = randomNoteFrequency();
+            setSparkFrequency(frequency);
+
+            frequencyCounter = 0;
+        }
+        else {
+            frequencyCounter++;
         }
 
+        // Flash indicator
         if (indicatorCounter == INDICATOR_HALF_PERIOD) {
             toggleIndicator();
             indicatorCounter = 0;
