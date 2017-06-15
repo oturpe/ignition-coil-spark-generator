@@ -19,10 +19,12 @@
 
 // Length of one tone in sequence. Given in units of LOOP_DELAY
 #define TONE_PERIOD 14
-// Frequency of the lowest possible frequency
-#define TONE_MINIMUM_FREQUENCY 50
-// Ration between two consecutive intervals. Value of 1.0595 gives 12 steps per
-// octave.
-#define TONE_INTERVAL_RATIO 1.0595;
-// Amount of tones in the range
-#define TONE_RANGE 60
+
+// Frequency of base tone of Bohlen-Pierce scale, α3 (39)
+#define BP_TONE_BASE_FREQUENCY 440
+// Lowest possible tone
+#define BP_TONE_MIN 13
+// Highest possible tone, as lambda mode steps above the base tone
+#define BP_TONE_MAX 65
+// Largest possible jump between two consecutive tones
+#define BP_TONE_JUMP_MAX 7

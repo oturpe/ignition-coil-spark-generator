@@ -9,6 +9,8 @@
 
 #include "config.h"
 
+#include "bp-lambda.h"
+
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdlib.h>
@@ -58,7 +60,7 @@ void initializeSparkTrigger() {
 ///
 /// \param frequency
 ///    Spark frequency in units of Hertz
-void setSparkFrequency(uint32_t frequency) {
+void setSparkFrequency(uint16_t frequency) {
     const uint32_t stepFrequency = F_CPU / prescaler;
 
     uint32_t steps = (stepFrequency / frequency) / 2;
@@ -66,37 +68,19 @@ void setSparkFrequency(uint32_t frequency) {
     OCR1A = steps;
 }
 
-/// \brief
-///    Returns the frequency of a random note between defined minimum and
-///    maximum tone.
-///
-/// \return
-///    Random note frequency
-uint32_t randomNoteFrequency() {
-    uint8_t steps = rand() % TONE_RANGE;
-
-    uint32_t frequency = TONE_MINIMUM_FREQUENCY;
-    for (int i = 0; i < steps; i++) {
-        frequency *= TONE_INTERVAL_RATIO;
-    }
-
-    return frequency;
-}
-
 int main() {
     INDICATOR_DATA_DIR |= BV(INDICATOR_DATA_DIR_PIN);
 
     initializeSparkTrigger();
 
-    uint32_t frequencyDirection = 1;
-
-    uint32_t frequencyCounter = 0;
+    uint16_t frequencyCounter = 0;
+    uint8_t note = BP_TONE_BASE_STEP;
 
     while (true) {
         // Set spark tone
         if (frequencyCounter == TONE_PERIOD) {
-            uint32_t frequency = randomNoteFrequency();
-            setSparkFrequency(frequency);
+            note = Bp::nextNote(note);
+            setSparkFrequency(Bp::frequency(note));
 
             frequencyCounter = 0;
         }
