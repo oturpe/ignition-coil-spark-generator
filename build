@@ -16,6 +16,12 @@ if [ -$? -ne 0 ]; then
   exit 0
 fi
 
+./reset-32u4.pl ${port}
+if [ $? -ne 0 ]; then
+  echo "Microcontroller reset failed"
+  exit 0
+fi
+
 sudo avrdude -c ${programmer} -p ${mcu} -P ${port} -b 57600 -U flash:w:${targetDir}/${projectName}.hex
 if [ $? -ne 0 ]; then
   echo "Upload failed"
