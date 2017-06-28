@@ -17,8 +17,16 @@
 // indicator spends on and off. Given in units of LOOP_DELAY.
 #define INDICATOR_HALF_PERIOD 20
 
-// Length of one tone in sequence. Given in units of LOOP_DELAY
-#define TONE_PERIOD 14
+// The number of individual sparks making tones
+#define SPARK_COUNT 2
+// Length of one tone in sequence for spark 0. Given in units of LOOP_DELAY
+#define SPARK_PERIOD_0 14
+// Length of one tone in sequence for spark 1. Given in units of LOOP_DELAY
+#define SPARK_PERIOD_1 13
+
+// Time needed to charge spark plug. Given as the number of times the plug can
+// be loaded in one seconds (i.e. 1/T) 
+#define SPARK_LOAD_FREQUENCY 5000
 
 // Frequency of base tone of Bohlen-Pierce scale, α3 (39)
 #define BP_TONE_BASE_FREQUENCY 440
