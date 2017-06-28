@@ -15,7 +15,7 @@
 
 // Half length of one complete indicator period. In other words, the time the
 // indicator spends on and off. Given in units of LOOP_DELAY.
-#define INDICATOR_HALF_PERIOD 20
+#define INDICATOR_HALF_PERIOD 30
 
 // The number of individual sparks making tones
 #define SPARK_COUNT 2

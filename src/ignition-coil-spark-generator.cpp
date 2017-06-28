@@ -113,7 +113,7 @@ int main() {
 
     while (true) {
         // Set spark 0 tone
-        if (sparkCounter[1] == SPARK_PERIOD_0) {
+        if (sparkCounter[0] == SPARK_PERIOD_0) {
             notes[0] = Bp::nextNote(notes[0]);
             setSpark0Frequency(Bp::frequency(notes[0]));
 
@@ -126,7 +126,7 @@ int main() {
         // Set spark 1 tone
         if (sparkCounter[1] == SPARK_PERIOD_1) {
             notes[1] = Bp::nextNote(notes[1]);
-            setSpark0Frequency(Bp::frequency(notes[1]));
+            setSpark1Frequency(Bp::frequency(notes[1]));
 
             sparkCounter[1] = 0;
         }
