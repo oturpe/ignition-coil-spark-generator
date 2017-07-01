@@ -5,15 +5,16 @@
 // Email: oturpe@iki.fi
 // Date: 2017-05-09
 
-#include "AvrUtils.h"
-
 #include "config.h"
-
-#include "bp-lambda.h"
 
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdlib.h>
+
+#include "AtmegaU4Utils.h"
+
+
+#include "bp-lambda.h"
 
 uint32_t indicatorCounter = 0;
 
@@ -32,10 +33,6 @@ void toggleIndicator() {
     lit = !lit;
 }
 
-// Value of timer prescalers for sparks 0 and 1. Set this value when prescaler
-// value is changed.
-uint16_t prescalers[2] = {1, 1};
-
 /// \brief
 ///    Initializes spark triggers to run as variable frequency pwm with fixed
 ///    ON period. Frequency is set using function setSparkFrequency() while
@@ -51,11 +48,11 @@ void initializeSparkTrigger() {
     TCCR1A |= BV(WGM11) | BV(WGM10);
 
     // Prescaler
-    TCCR0B |= BV(CS02) | BV(CS00);
-    prescalers[0] = 1024;
+    // TODO: Check that these new definitions work
+    // TODO: Move the storage and query of prescaler value to AtmegaU4Utils
+    AtmegaU4::setTimer0Prescaler(AtmegaU4::PSV_1024);
 
-    TCCR1B |= BV(CS11) | BV(CS10);
-    prescalers[1] = 64;
+    AtmegaU4::setTimer1Prescaler(AtmegaU4::PSV_64);
 
     // Clear on compare match, set on TOP
     TCCR0A |= BV(COM0B1);
@@ -63,9 +60,9 @@ void initializeSparkTrigger() {
     TCCR1A |= BV(COM1B1);
 
     // Set ON period
-    OCR0B = (F_CPU / prescalers[0]) / SPARK_LOAD_FREQUENCY;
+    OCR0B = (F_CPU / AtmegaU4::timer0Prescaler()) / SPARK_LOAD_FREQUENCY;
 
-    OCR1B = (F_CPU / prescalers[1]) / SPARK_LOAD_FREQUENCY;
+    OCR1B = (F_CPU / AtmegaU4::timer1Prescaler()) / SPARK_LOAD_FREQUENCY;
 
     // Set oscillator pin to output
     DDRD |= BV(DDD0);
@@ -79,7 +76,7 @@ void initializeSparkTrigger() {
 /// \param frequency
 ///    Spark frequency in units of Hertz
 void setSpark0Frequency(uint16_t frequency) {
-    const uint32_t stepFrequency = F_CPU / prescalers[0];
+    const uint32_t stepFrequency = F_CPU / AtmegaU4::timer0Prescaler();
 
     uint32_t steps = stepFrequency / frequency;
 
@@ -92,7 +89,7 @@ void setSpark0Frequency(uint16_t frequency) {
 /// \param frequency
 ///    Spark frequency in units of Hertz
 void setSpark1Frequency(uint16_t frequency) {
-    const uint32_t stepFrequency = F_CPU / prescalers[1];
+    const uint32_t stepFrequency = F_CPU / AtmegaU4::timer1Prescaler();
 
     uint32_t steps = stepFrequency / frequency;
 
