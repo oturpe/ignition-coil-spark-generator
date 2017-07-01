@@ -71,6 +71,29 @@ void initializeSparkTrigger() {
 }
 
 /// \brief
+///    Sets both outputs to logic low.
+void disableOutputs() {
+    // Disable pwm outputs
+    TCCR0A &= ~BV(COM0B1);
+
+    TCCR1A &= ~BV(COM1B1);
+
+    // Set outputs to low
+    PORTD &= ~BV(PORTD0);
+
+    PORTB &= ~BV(PORTB6);
+}
+
+/// \brief
+///    Connects outputs to pwm timers.
+void enableOutputs() {
+    // Enable pwm outputs
+    TCCR0A |= BV(COM0B1);
+
+    TCCR1A |= BV(COM1B1);
+}
+
+/// \brief
 ///    Sets spark 0 frequency to given value.
 ///
 /// \param frequency
@@ -100,6 +123,9 @@ int main() {
     INDICATOR_DATA_DIR |= BV(INDICATOR_DATA_DIR_PIN);
 
     initializeSparkTrigger();
+
+    uint16_t cooldownCounter = 0;
+    bool isCooling = false;
 
     uint16_t sparkCounter[2] = {0, 0};
     // The current note for the two oscillators
@@ -138,6 +164,22 @@ int main() {
         }
         else {
             indicatorCounter++;
+        }
+
+        if (isCooling && cooldownCounter == COOLDOWN_PERIOD_OFF) {
+            enableOutputs();
+
+            isCooling = false;
+            cooldownCounter = 0;
+        }
+        else if (!isCooling && cooldownCounter == COOLDOWN_PERIOD_ON) {
+            disableOutputs();
+
+            isCooling = true;
+            cooldownCounter = 0;
+        }
+        else {
+            cooldownCounter++;
         }
 
         _delay_ms(LOOP_DELAY);

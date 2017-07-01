@@ -36,3 +36,8 @@
 #define BP_TONE_MAX 65
 // Largest possible jump between two consecutive tones
 #define BP_TONE_JUMP_MAX 7
+
+// Length of period when the sparks are on. Given in units of LOOP_DELAY
+#define COOLDOWN_PERIOD_ON 500
+// Length of period when the sparks are off. Given in units of LOOP_DELAY
+#define COOLDOWN_PERIOD_OFF 2000
